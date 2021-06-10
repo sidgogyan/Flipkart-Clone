@@ -1,19 +1,36 @@
-import React from 'react'
+import React, { useState,useEffect } from 'react'
 import { Col, Container, Row,Form,Button } from 'react-bootstrap'
 import Layout from '../../components/Layout'
 import Input from "../../components/UI/Input"
-import {login} from "../../actions"
-import {useDispatch} from 'react-redux'
+import {isUserLoggedIn, login} from "../../actions"
+import {useDispatch, useSelector} from 'react-redux'
+import { Redirect } from 'react-router-dom'
 
 function Signin() {
-   const dispatch=useDispatch();
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
+  const [error,setError]=useState("");
+
+  const auth=useSelector(state=>state.auth);
+  const dispatch=useDispatch();
+  useEffect(()=>{
+    if(!auth.authenticate){
+      dispatch(isUserLoggedIn());
+    }
+  },[])
+ 
   const  userLogin=(e)=>{
+
     e.preventDefault();
     const user={
-    email:"sid9057819561@gmail.com",
-    password:"Sid12345"
+    email:email,
+    password:password
     }
     dispatch(login(user));
+  }
+
+  if(auth.authenticate){
+    return <Redirect to={"/"}/>
   }
 
 
@@ -30,8 +47,8 @@ function Signin() {
                           label="Email"
                           type="email"
                           placeholder="Enter Email"
-                          value=""
-                          onChange={()=>{}}
+                          value={email}
+                          onChange={(e)=>{setEmail(e.target.value)}}
                           errorMessage="We'll never share your email with anyone else."
                          
                          />
@@ -40,8 +57,8 @@ function Signin() {
                           label="Password"
                           type="password"
                           placeholder="Enter Password"
-                          value=""
-                          onChange={()=>{}}
+                          value={password}
+                          onChange={(e)=>{setPassword(e.target.value)}}
                           
 
                         /> 
